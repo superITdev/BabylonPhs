@@ -12,9 +12,16 @@ export default class PrimitiveUI {
     /** UI panel */
     private gui: GUI | undefined;
     /** privmitive parameters */
-    private options: any;
+    private meshOptions = new Map<Mesh, any>();
     /** target mesh adjusting on this UI */
     private mesh: Mesh | undefined;
+
+    get options() {
+        return this.meshOptions.get(this.mesh!);
+    }
+    set options(options: any) {
+        this.meshOptions.set(this.mesh!, options);
+    }
 
     private getTransformNode() {
         return this.mesh?.parent as TransformNode;
@@ -25,14 +32,18 @@ export default class PrimitiveUI {
             this.gui.destroy();
         }
         this.gui = new GUI({ title: 'Options' });
-        this.options = {};
         this.mesh = mesh;
+        if (!this.options) {
+            this.options = {};
+        }
     }
 
     private appendAnimateUI() {
+        const { amplitude = 5, duration = 3 } = this.options || {};
+
         const options = Object.assign(this.options, {
-            amplitude: 5,
-            duration: 3,
+            amplitude,
+            duration,
 
             apply: () => {
                 applyBouncing(this.getTransformNode(), options.amplitude, options.duration)
@@ -47,10 +58,8 @@ export default class PrimitiveUI {
     openCylinderUI(mesh: Mesh) {
         this.createCommonUI(mesh);
 
-        const options = Object.assign(this.options, {
-            diameter: 1,
-            height: 2,
-        });
+        const { diameter = 1, height = 2 } = this.options || {};
+        const options = Object.assign(this.options, { diameter, height });
 
         const onChange = () => {
             const { diameter, height } = options;
@@ -67,11 +76,8 @@ export default class PrimitiveUI {
     openCubeUI(mesh: Mesh) {
         this.createCommonUI(mesh);
 
-        const options = Object.assign(this.options, {
-            width: 1,
-            height: 1,
-            depth: 1,
-        });
+        const { width = 1, height = 1, depth = 1 } = this.options || {};
+        const options = Object.assign(this.options, { width, height, depth });
 
         const onChange = () => {
             const { width, height, depth } = options;
@@ -89,10 +95,8 @@ export default class PrimitiveUI {
     openIcoSphereUI(mesh: Mesh) {
         this.createCommonUI(mesh);
 
-        const options = Object.assign(this.options, {
-            diameter: 2,
-            subdivisions: 4,
-        });
+        const { diameter = 2, subdivisions = 4 } = this.options || {};
+        const options = Object.assign(this.options, { diameter, subdivisions });
 
         const onChange = () => {
             const { diameter, subdivisions } = options;
