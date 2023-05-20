@@ -39,19 +39,21 @@ export default class PrimitiveUI {
     }
 
     private appendAnimateUI() {
-        const { amplitude = 5, duration = 3 } = this.options || {};
+        const { amplitude = 5, duration = 1000, bounces = 3 } = this.options || {};
 
         const options = Object.assign(this.options, {
             amplitude,
             duration,
+            bounces,
 
             apply: () => {
-                applyBouncing(this.getTransformNode(), options.amplitude, options.duration)
+                applyBouncing(this.getTransformNode(), options.amplitude, options.duration, options.bounces)
             }
         });
         const folder = this.gui!.addFolder('Bouncing');
         folder.add(options, 'amplitude').name('Amplitude');
-        folder.add(options, 'duration').name('Duration (seconds)');
+        folder.add(options, 'duration').name('Duration (ms)');
+        folder.add(options, 'bounces', 1, 10, 1).name('Bounces');
         folder.add(options, 'apply').name('Apply');
     }
 
