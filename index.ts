@@ -1,6 +1,6 @@
-import { Engine, Scene, ArcRotateCamera, HemisphericLight, Vector3, MeshBuilder, ActionManager, ExecuteCodeAction } from 'babylonjs';
+import { Engine, Scene, ArcRotateCamera, HemisphericLight, Vector3, MeshBuilder, ActionManager, ExecuteCodeAction, TransformNode } from 'babylonjs';
 import 'babylonjs-loaders';
-import PrimitiveUI from './PrimitiveUI';
+import PrimitiveUI from './features/PrimitiveUI';
 
 const canvas = document.getElementById("canvas");
 if (!(canvas instanceof HTMLCanvasElement)) throw new Error("Couldn't find a canvas. Aborting the demo")
@@ -19,29 +19,32 @@ function prepareScene() {
 	new HemisphericLight("light", new Vector3(0.5, 1, 0.8).normalize(), scene);
 
 	// Objects
-	const cube = MeshBuilder.CreateBox("Cube", {}, scene);
-	cube.position.set(0, 0, 0);
+	const cubeMesh = MeshBuilder.CreateBox("CubeMesh", {}, scene);
+	const cubeNode = cubeMesh.parent = new TransformNode('CubeNode', scene);
+	cubeNode.position.set(0, 0, 0);
 
-	const icosphere = MeshBuilder.CreateIcoSphere("IcoSphere", {}, scene);
-	icosphere.position.set(-2, 0, 0);
+	const icosphereMesh = MeshBuilder.CreateIcoSphere("IcoSphereMesh", {}, scene);
+	const icosphereNode = icosphereMesh.parent = new TransformNode('IcoSphereNode', scene);
+	icosphereNode.position.set(-2, 0, 0);
 
-	const cylinder = MeshBuilder.CreateCylinder("Cylinder", {}, scene);
-	cylinder.position.set(2, 0, 0);
+	const cylinderMesh = MeshBuilder.CreateCylinder("CylinderMesh", {}, scene);
+	const cylinderNode = cylinderMesh.parent = new TransformNode('CylinderNode', scene);
+	cylinderNode.position.set(2, 0, 0);
 
 	// Actions
-	cube.actionManager = new ActionManager(scene);
-	cube.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickUpTrigger, () => {
-		primitiveUI.OpenCubeUI(cube);
+	cubeMesh.actionManager = new ActionManager(scene);
+	cubeMesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickUpTrigger, () => {
+		primitiveUI.openCubeUI(cubeMesh);
 	}));
 
-	icosphere.actionManager = new ActionManager(scene);
-	icosphere.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickUpTrigger, () => {
-		primitiveUI.OpenIcoSphereUI(icosphere);
+	icosphereMesh.actionManager = new ActionManager(scene);
+	icosphereMesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickUpTrigger, () => {
+		primitiveUI.openIcoSphereUI(icosphereMesh);
 	}));
 
-	cylinder.actionManager = new ActionManager(scene);
-	cylinder.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickUpTrigger, () => {
-		primitiveUI.OpenCylinderUI(cylinder);
+	cylinderMesh.actionManager = new ActionManager(scene);
+	cylinderMesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickUpTrigger, () => {
+		primitiveUI.openCylinderUI(cylinderMesh);
 	}));
 }
 
