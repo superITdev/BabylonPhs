@@ -22,23 +22,49 @@ class BouncingEase extends EasingFunction implements IEasingFunction {
      * @returns the corresponding value on the curve defined by the easing function
      */
     easeInCore(gradient: number): number {
-        const HALF_PI = Math.PI / 2;
+        const halfPI = Math.PI / 2;
+        const halfQ = 0.75;
 
         const bounces = Math.max(1, this.bounces);
 
         // time, cycle
-        const nhalf = (bounces - 1) * 2 + 1; // number of half PI
+        let cycle, st;
+        let term = 2 * halfQ;
 
-        const total = nhalf * HALF_PI; // total time
-        const t = total * gradient; // current time
+        for (cycle = 1, st = 1; cycle < bounces; cycle++) {
+            st += term;
+            term *= halfQ;
+        }
+        const sf = 1 / st; // normalized seed halfPI length (scaled to [0, 1])
 
-        const cycle = Math.ceil(Math.floor(t / HALF_PI) / 2) / bounces;
+        let x = 0; // absolute x in function graphe
+        if (gradient <= sf) {
+            x = (gradient / sf) * halfPI;
+            cycle = 0;
+        } else {
+            term = sf * 2 * halfQ;
+
+            let stA = sf;
+            let stB = stA + term;
+
+            for (cycle = 0, st = sf; st < gradient; cycle++) {
+                stA = st;
+
+                st += term;
+                stB = st;
+
+                term *= halfQ;
+            }
+
+            x = halfPI + Math.max(0, (cycle - 1)) * Math.PI;
+            x += (gradient - stA) / (stB - stA) * Math.PI;
+        }
 
         // modulate amplitude for the cycle
-        const amp = 1 - BezierCurve.Interpolate(cycle, 0.12, 0, 0.39, 0);
+        const amp = 1 - BezierCurve.Interpolate(cycle / bounces, 0.12, 0, 0.39, 0);
 
         // compose
-        let y = amp * Math.abs(Math.cos(t));
+        let y = amp * Math.abs(Math.cos(x));
 
         y = 1 - y;
         return y;
