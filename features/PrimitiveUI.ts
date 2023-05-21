@@ -39,7 +39,7 @@ export default class PrimitiveUI {
     }
 
     private appendAnimateUI() {
-        const { amplitude = 5, duration = 1000, bounces = 3 } = this.options || {};
+        const { amplitude = 5, duration = 1000, bounces = 5 } = this.options || {};
 
         const options = Object.assign(this.options, {
             amplitude,
