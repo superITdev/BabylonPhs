@@ -31,7 +31,7 @@ function prepareScene() {
 	const cylinderNode = cylinderMesh.parent = new TransformNode('CylinderNode', scene);
 	cylinderNode.position.set(2, 0, 0);
 
-	// Actions
+	// Clicking Actions to bring up the UI window
 	cubeMesh.actionManager = new ActionManager(scene);
 	cubeMesh.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnPickUpTrigger, () => {
 		primitiveUI.openCubeUI(cubeMesh);
