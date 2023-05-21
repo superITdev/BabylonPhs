@@ -1,9 +1,5 @@
 import { Animation, BezierCurve, EasingFunction, IEasingFunction, TransformNode } from "babylonjs";
 
-// constants
-const HALF_PI = Math.PI / 2;
-const FPS = 30;
-
 /**
  * Easing function for the bouncing interpolation
  * @see roughly match the following video (https://www.youtube.com/watch?v=a7oSbf8NiLw)
@@ -26,11 +22,16 @@ class BouncingEase extends EasingFunction implements IEasingFunction {
      * @returns the corresponding value on the curve defined by the easing function
      */
     easeInCore(gradient: number): number {
+        const HALF_PI = Math.PI / 2;
+
         const bounces = Math.max(1, this.bounces);
 
         // time, cycle
-        const total = ((bounces - 1) * 2 + 1) * HALF_PI;
-        const t = total * gradient;
+        const nhalf = (bounces - 1) * 2 + 1; // number of half PI
+
+        const total = nhalf * HALF_PI; // total time
+        const t = total * gradient; // current time
+
         const cycle = Math.ceil(Math.floor(t / HALF_PI) / 2) / bounces;
 
         // modulate amplitude for the cycle
@@ -53,6 +54,8 @@ class BouncingEase extends EasingFunction implements IEasingFunction {
  * @returns void
  */
 export function applyBouncing(node: TransformNode, amplitude: number, duration: number, bounces: number) {
+    const FPS = 30;
+
     // animation for bouncing
     const animation = new Animation("bouncing", "position.y", FPS, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
 
@@ -60,6 +63,5 @@ export function applyBouncing(node: TransformNode, amplitude: number, duration: 
     const easingFunction = new BouncingEase(bounces);
     animation.setEasingFunction(easingFunction);
 
-    node.animations.push(animation);
     Animation.CreateAndStartAnimation('bouncing', node, 'position.y', FPS, duration / 1000 * FPS, amplitude, 0, Animation.ANIMATIONLOOPMODE_CONSTANT, easingFunction)
 }
