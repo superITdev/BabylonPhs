@@ -26,17 +26,17 @@ class BouncingEase extends EasingFunction implements IEasingFunction {
      * @returns the corresponding value on the curve defined by the easing function
      */
     easeInCore(gradient: number): number {
-        const bounces = Math.max(1, this.bounces)
+        const bounces = Math.max(1, this.bounces);
 
-        const tTotal = ((bounces - 1) * 2 + 1) * HALF_PI;
-        const t = tTotal * gradient;
+        // time, cycle
+        const total = ((bounces - 1) * 2 + 1) * HALF_PI;
+        const t = total * gradient;
+        const cycle = Math.ceil(Math.floor(t / HALF_PI) / 2) / bounces;
 
-        const tCycle = Math.ceil(Math.floor(t / HALF_PI) / 2) / bounces;
-        console.log('tCycle', tCycle);
+        // modulate amplitude for the cycle
+        const amp = 1 - BezierCurve.Interpolate(cycle, 0.12, 0, 0.39, 0);
 
-        // modulate amplitude
-        const amp = 1 - BezierCurve.Interpolate(tCycle, 0.12, 0, 0.39, 0);
-
+        // compose
         let y = amp * Math.abs(Math.cos(t));
 
         y = 1 - y;
